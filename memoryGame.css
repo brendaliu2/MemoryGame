@@ -1,9 +1,33 @@
 /* you can add to or change this. */
 
-#game div {
+
+#game div{
   border: 1px solid black;
   width: 100px;
   height: 100px;
   margin: 20px;
   display: inline-block;
+
+}
+
+#game {
+  width: 600px;
+  height: 600px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+
+h1 {
+  padding: 20px;
+  margin: 10px;
+}
+
+#scoreBox {
+  padding-top: 30px;
+  padding-bottom: 30px;
+
 }
