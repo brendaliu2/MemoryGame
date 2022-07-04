@@ -2,12 +2,14 @@
 
 /** Memory game: find matching pairs of cards and flip both of them. */
 
+const gameBoard = document.querySelector('#game');
 const displayScore = document.querySelector('#score');
+
 
 const FOUND_MATCH_WAIT_MSECS = 1000;
 const COLORS = [
-  "red", "blue", "green", "orange", "purple",
-  "red", "blue", "green", "orange", "purple",
+  "red", "blue", "green", "orange", "purple", "pink",
+  "red", "blue", "green", "orange", "purple", "pink"
 ];
 const COUNT = {
   flips:0,
@@ -47,36 +49,46 @@ function shuffle(items) {
  */
 
 function createCards(colors) {
-  const gameBoard = document.getElementById("game");
-
   for (let color of colors) {
-    // missing code here ...
     const card = document.createElement('div');
     card.className = `${color}`;
     gameBoard.append(card);
-    card.addEventListener('click',function(e){
-      e.preventDefault();
-      flipCard(card);
-      COUNT.score++;
-      displayScore.innerText = COUNT.score;
-    })
   }
   let cards = gameBoard.childNodes;
   for (let i = 0; i < cards.length; i++){
     cards[i].id = `${i+1}`;
   }
-
 }
+
+const CARDS = gameBoard.childNodes;
+var TOGGLE = false;
+
+
+function addListener(cards){
+  for(let card of cards){
+    card.addEventListener('click',(e) => {
+      e.preventDefault();
+      flipCard(card);
+      COUNT.score++;
+      displayScore.innerText = COUNT.score;
+    });
+    card.removeEventListener('click',(e) => {
+      e.preventDefault();
+      flipCard(card);
+      COUNT.score++;
+      displayScore.innerText = COUNT.score;
+    },true);
+  }
+}
+addListener(CARDS);
 
 
 /** Flip a card face-up. */
 
 function flipCard(card) {
-  // ... you need to write this ...
   let flipped = COUNT.flips;
   let cardsFlipped = COUNT.cardsFlipped;
   let id = card.id;
-  const gameBoard = document.getElementById("game");
   let newColor = card.className;
   if(flipped === 0){
     card.style.backgroundColor = newColor;
@@ -85,39 +97,27 @@ function flipCard(card) {
   } else if (flipped === 1){
     card.style.backgroundColor = newColor;
     cardsFlipped.push(id);
-    if(document.getElementById(`${cardsFlipped[0]}`).className === document.getElementById(`${cardsFlipped[1]}`).className){
+    if(document.getElementById(`${cardsFlipped[0]}`).className === document.getElementById(`${cardsFlipped[1]}`).className && cardsFlipped[0] !== cardsFlipped[1]){
       document.getElementById(`${cardsFlipped[0]}`).className = 'match';
       document.getElementById(`${cardsFlipped[1]}`).className = 'match';
       COUNT.flips = 0;
       COUNT.cardsFlipped = [];
       COUNT.match++;
       if(COUNT.match === COUNT.maxMatch){
+        COUNT.finalScore = COUNT.score + 1;
         setTimeout(() => {
           alert('You Win!');
         },500)
+        highScore ();
       }
     } else {
       COUNT.flips = 0;
       COUNT.cardsFlipped = [];
       setTimeout(() => {
         unFlipCard(gameBoard);
-      }, 1000);
+      }, FOUND_MATCH_WAIT_MSECS);
     }
   }
-
-
-
-  // if(flipped < 2){
-  //   let newColor = card.className;
-  //   count.cardsFlipped = [newColor];
-  //   card.style.backgroundColor = newColor;
-  //   count.flippedCards++;
-  // } else {
-  //   unFlipCard(gameBoard);
-  //   count.flippedCards = 0;
-  // }
-
-
 }
 
 /** Flip a card face-down. */
@@ -137,19 +137,35 @@ function unFlipCard(gameBoard) {
 /** Handle clicking on a card: this could be first-card or second-card. */
 
 function handleCardClick(evt) {
-  // ... you need to write this ...
 }
 
 function restart(){
-  const gameBoard = document.getElementById("game");
-  let cards = gameBoard.childNodes;
-  for (let card of cards){
-    card.remove();
+  while(gameBoard.firstChild){
+    gameBoard.removeChild(gameBoard.firstChild);
   }
   const newShuffle = shuffle(COLORS);
   createCards(newShuffle);
+  addListener(CARDS);
+  COUNT.flips = 0;
+  COUNT.cardsFlipped = [];
+  COUNT.score = 0;
+  COUNT.match = 0;
+  COUNT.finalScore = 0;
+  displayScore.innerText = 0;
 }
 
 const RESTART = document.getElementById('restart');
+RESTART.addEventListener('click',function(e){
+  e.preventDefault();
+  restart();
+})
 
+function highScore () {
+  const highScore = document.getElementById('highScore');
+  if(highScore.innerText === ''){
+    highScore.innerText = COUNT.finalScore;
+  } else if(COUNT.finalScore < highScore.innerText){
+    highScore.innerText = COUNT.finalScore;
+  }
+}
 
