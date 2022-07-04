@@ -2,9 +2,8 @@
 
 /** Memory game: find matching pairs of cards and flip both of them. */
 
-const gameBoard = document.querySelector('#game');
-const displayScore = document.querySelector('#score');
-
+const GAMEBOARD = document.querySelector('#game');
+const DISPLAYSCORE = document.querySelector('#score');
 
 const FOUND_MATCH_WAIT_MSECS = 1000;
 const COLORS = [
@@ -12,12 +11,13 @@ const COLORS = [
   "red", "blue", "green", "orange", "purple", "pink"
 ];
 const COUNT = {
-  flips:0,
-  cardsFlipped:[],
-  score:0,
-  match:0,
-  maxMatch: COLORS.length/2
+  flips: 0,
+  cardsFlipped: [],
+  score: 0,
+  match: 0,
+  maxMatch: COLORS.length / 2
 };
+
 const colors = shuffle(COLORS);
 
 createCards(colors);
@@ -52,36 +52,30 @@ function createCards(colors) {
   for (let color of colors) {
     const card = document.createElement('div');
     card.className = `${color}`;
-    gameBoard.append(card);
+    GAMEBOARD.append(card);
   }
-  let cards = gameBoard.childNodes;
-  for (let i = 0; i < cards.length; i++){
-    cards[i].id = `${i+1}`;
-  }
-}
-
-const CARDS = gameBoard.childNodes;
-var TOGGLE = false;
-
-
-function addListener(cards){
-  for(let card of cards){
-    card.addEventListener('click',(e) => {
-      e.preventDefault();
-      flipCard(card);
-      COUNT.score++;
-      displayScore.innerText = COUNT.score;
-    });
-    card.removeEventListener('click',(e) => {
-      e.preventDefault();
-      flipCard(card);
-      COUNT.score++;
-      displayScore.innerText = COUNT.score;
-    },true);
+  let cards = GAMEBOARD.childNodes;
+  for (let i = 0; i < cards.length; i++) {
+    cards[i].id = `${i + 1}`;
   }
 }
-addListener(CARDS);
 
+const CARDS = GAMEBOARD.childNodes;
+
+function addListener() {
+  document.addEventListener('click', e => {
+    const eTarget = e.target;
+    const eParent = eTarget.parentElement;
+
+    if (eParent === GAMEBOARD && COUNT.flips < 2 && eTarget.className !== 'match' && COUNT.cardsFlipped[0] !== eTarget.id) {
+      COUNT.score++;
+      DISPLAYSCORE.innerText = COUNT.score;
+      flipCard(eTarget);
+    }
+  });
+}
+
+addListener();
 
 /** Flip a card face-up. */
 
@@ -90,44 +84,26 @@ function flipCard(card) {
   let cardsFlipped = COUNT.cardsFlipped;
   let id = card.id;
   let newColor = card.className;
-  if(flipped === 0){
+  if (flipped === 0) {
     card.style.backgroundColor = newColor;
     COUNT.flips++;
     cardsFlipped.push(id);
-  } else if (flipped === 1){
+  } else if (flipped === 1) {
     card.style.backgroundColor = newColor;
+    COUNT.flips++;
     cardsFlipped.push(id);
-    if(document.getElementById(`${cardsFlipped[0]}`).className === document.getElementById(`${cardsFlipped[1]}`).className && cardsFlipped[0] !== cardsFlipped[1]){
-      document.getElementById(`${cardsFlipped[0]}`).className = 'match';
-      document.getElementById(`${cardsFlipped[1]}`).className = 'match';
-      COUNT.flips = 0;
-      COUNT.cardsFlipped = [];
-      COUNT.match++;
-      if(COUNT.match === COUNT.maxMatch){
-        COUNT.finalScore = COUNT.score + 1;
-        setTimeout(() => {
-          alert('You Win!');
-        },500)
-        highScore ();
-      }
-    } else {
-      COUNT.flips = 0;
-      COUNT.cardsFlipped = [];
-      setTimeout(() => {
-        unFlipCard(gameBoard);
-      }, FOUND_MATCH_WAIT_MSECS);
-    }
+    isMatch();
   }
 }
 
 /** Flip a card face-down. */
 
-function unFlipCard(gameBoard) {
+function unFlipCard(GAMEBOARD) {
   // ... you need to write this ...
-  let cards = gameBoard.childNodes;
-  for (let i = 0; i < cards.length; i++){
+  let cards = GAMEBOARD.childNodes;
+  for (let i = 0; i < cards.length; i++) {
     let card = cards[i];
-    if(card.className !== 'match'){
+    if (card.className !== 'match') {
       card.style.backgroundColor = '';
     }
   }
@@ -139,32 +115,77 @@ function unFlipCard(gameBoard) {
 function handleCardClick(evt) {
 }
 
-function restart(){
-  while(gameBoard.firstChild){
-    gameBoard.removeChild(gameBoard.firstChild);
+function isMatch() {
+  let cardsFlipped = COUNT.cardsFlipped;
+
+  if (document.getElementById(`${cardsFlipped[0]}`).className === document.getElementById(`${cardsFlipped[1]}`).className && cardsFlipped[0] !== cardsFlipped[1]) {
+    document.getElementById(`${cardsFlipped[0]}`).className = 'match';
+    document.getElementById(`${cardsFlipped[1]}`).className = 'match';
+    COUNT.cardsFlipped = [];
+    COUNT.match++;
+    isWin();
+    setTimeout(() => {
+      COUNT.flips = 0;
+    }, 500);
+  } else {
+    COUNT.cardsFlipped = [];
+    setTimeout(() => {
+      unFlipCard(GAMEBOARD);
+    }, FOUND_MATCH_WAIT_MSECS);
+    setTimeout(() => {
+      COUNT.flips = 0;
+    }, FOUND_MATCH_WAIT_MSECS);
+  }
+}
+
+function isWin() {
+  if (COUNT.match === COUNT.maxMatch) {
+    COUNT.finalScore = COUNT.score + 1;
+    setTimeout(() => {
+      GAMEBOARD.innerHTML =
+      `<section id="win" class="container">
+      <section class="row">
+        <section class="col text-center">
+          <h3>You Win!</h3>
+        </section>
+      </section>
+      <section class="row">
+        <section class="col text-center">
+          <h3>Your Score: ${COUNT.score + 1}</h3>
+        </section>
+      </section>
+    </section>`;
+    highScore();
+    }, 1000);
+  }
+}
+
+
+function restart() {
+  while (GAMEBOARD.firstChild) {
+    GAMEBOARD.removeChild(GAMEBOARD.firstChild);
   }
   const newShuffle = shuffle(COLORS);
   createCards(newShuffle);
-  addListener(CARDS);
   COUNT.flips = 0;
   COUNT.cardsFlipped = [];
   COUNT.score = 0;
   COUNT.match = 0;
   COUNT.finalScore = 0;
-  displayScore.innerText = 0;
+  DISPLAYSCORE.innerText = 0;
 }
 
 const RESTART = document.getElementById('restart');
-RESTART.addEventListener('click',function(e){
+RESTART.addEventListener('click', function (e) {
   e.preventDefault();
   restart();
-})
+});
 
-function highScore () {
+function highScore() {
   const highScore = document.getElementById('highScore');
-  if(highScore.innerText === ''){
+  if (highScore.innerText === 'None Yet!') {
     highScore.innerText = COUNT.finalScore;
-  } else if(COUNT.finalScore < highScore.innerText){
+  } else if (COUNT.finalScore < highScore.innerText) {
     highScore.innerText = COUNT.finalScore;
   }
 }
