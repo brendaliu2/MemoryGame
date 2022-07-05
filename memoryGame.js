@@ -4,24 +4,53 @@
 
 const GAMEBOARD = document.querySelector('#game');
 const DISPLAYSCORE = document.querySelector('#score');
-
 const FOUND_MATCH_WAIT_MSECS = 1000;
-const COLORS = [
-  "red", "blue", "green", "orange", "purple", "pink",
-  "red", "blue", "green", "orange", "purple", "pink"
-];
+const DIFFICULTY = {
+  "level1": 4,
+  "level2": 8,
+  "level3": 12,
+  "level4": 16,
+  "level5": 20
+}
+
+
+var SELECTEDLEVEL = 4;
+var COLORS = [];
+
+
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+function getRandomColor() {
+  let num1 = getRandomInt(0,251);
+  let num2 = getRandomInt(0,251);
+  let num3 = getRandomInt(0,251);
+  let color = `rgb(${num1}, ${num2}, ${num3})`;
+  return color;
+}
+
+function makeColors (){
+  let colorCount = SELECTEDLEVEL;
+  while(colorCount > 0){
+    let color = getRandomColor();
+    COLORS.push(color,color);
+    colorCount--;
+  }
+}
+
 const COUNT = {
   flips: 0,
   cardsFlipped: [],
   score: 0,
   match: 0,
-  maxMatch: COLORS.length / 2
+  maxMatch: SELECTEDLEVEL
 };
 
 const colors = shuffle(COLORS);
-
-createCards(colors);
-
 
 /** Shuffle array items in-place and return shuffled array. */
 
@@ -60,22 +89,35 @@ function createCards(colors) {
   }
 }
 
-const CARDS = GAMEBOARD.childNodes;
-
 function addListener() {
   document.addEventListener('click', e => {
     const eTarget = e.target;
     const eParent = eTarget.parentElement;
+    const eTargetId = e.target.id;
 
-    if (eParent === GAMEBOARD && COUNT.flips < 2 && eTarget.className !== 'match' && COUNT.cardsFlipped[0] !== eTarget.id) {
+    if (eParent === GAMEBOARD && COUNT.flips < 2 && eTarget.className !== 'match' && COUNT.cardsFlipped[0] !== eTarget.id && eTarget.id !== "start") {
       COUNT.score++;
       DISPLAYSCORE.innerText = COUNT.score;
       flipCard(eTarget);
     }
   });
 }
+const LEVELFORM = document.querySelector('#newGame');
+function addFormListener() {
+  LEVELFORM.addEventListener('submit', e => {
+    e.preventDefault();
+    const chosenLVL = LEVELFORM.elements.options.value;
+    SELECTEDLEVEL = DIFFICULTY[chosenLVL];
+    GAMEBOARD.innerHTML = '';
+    GAMEBOARD.style = 'grid-template-columns: repeat(4, auto);'
+    restart();
+    console.log(SELECTEDLEVEL)
+  })
+}
+
 
 addListener();
+addFormListener();
 
 /** Flip a card face-up. */
 
@@ -107,7 +149,6 @@ function unFlipCard(GAMEBOARD) {
       card.style.backgroundColor = '';
     }
   }
-
 }
 
 /** Handle clicking on a card: this could be first-card or second-card. */
@@ -140,31 +181,21 @@ function isMatch() {
 
 function isWin() {
   if (COUNT.match === COUNT.maxMatch) {
-    COUNT.finalScore = COUNT.score + 1;
+    COUNT.finalScore = COUNT.score;
     setTimeout(() => {
-      GAMEBOARD.innerHTML =
-      `<section id="win" class="container">
-      <section class="row">
-        <section class="col text-center">
-          <h3>You Win!</h3>
-        </section>
-      </section>
-      <section class="row">
-        <section class="col text-center">
-          <h3>Your Score: ${COUNT.score + 1}</h3>
-        </section>
-      </section>
-    </section>`;
-    highScore();
+      GAMEBOARD.style = 'height: 600px';
+      GAMEBOARD.innerHTML = `<button type="submit" id="start" class="btn btn-outline-danger btn-lg">You Win!<br>Your Score: ${COUNT.score}<br>Select New Level and Play Again!</button>`;
+      highScore();
     }, 1000);
   }
 }
-
 
 function restart() {
   while (GAMEBOARD.firstChild) {
     GAMEBOARD.removeChild(GAMEBOARD.firstChild);
   }
+  COLORS = []
+  makeColors();
   const newShuffle = shuffle(COLORS);
   createCards(newShuffle);
   COUNT.flips = 0;
@@ -174,12 +205,6 @@ function restart() {
   COUNT.finalScore = 0;
   DISPLAYSCORE.innerText = 0;
 }
-
-const RESTART = document.getElementById('restart');
-RESTART.addEventListener('click', function (e) {
-  e.preventDefault();
-  restart();
-});
 
 function highScore() {
   const highScore = document.getElementById('highScore');
