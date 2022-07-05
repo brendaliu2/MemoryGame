@@ -10,7 +10,8 @@
   <link rel="stylesheet" href="memoryGame.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=The+Nautigal:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=The+Nautigal:wght@700&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
@@ -38,8 +39,36 @@
     </div>
   </div>
 
+  <form action="" id="newGame">
+    <div class="container" id="levelSelection">
+      <div class="row align-items-center">
+        <div class="col text-center rounded" id="radioBox">
+          <input type="radio" name="options" value="level1" required> Level 1
+        </div>
 
-  <div id="game" class="container shadow p-3 mb-5 rounded"></div>
+        <div class="col text-center rounded" id="radioBox">
+          <input type="radio" name="options" value="level2" required> Level 2
+        </div>
+
+        <div class="col text-center rounded" id="radioBox">
+          <input type="radio" name="options" value="level3" required> Level 3
+        </div>
+
+        <div class="col text-center rounded" id="radioBox">
+          <input type="radio" name="options" value="level4" required> Level 4
+        </div>
+
+        <div class="col text-center rounded" id="radioBox">
+          <input type="radio" name="options" value="level5" required> Level 5
+        </div>
+      </div>
+    </div>
+
+    <div id="game" class="container shadow p-3 mb-5 rounded" style="height: 600px;">
+      <button type="submit" id="start" class="btn btn-outline-danger btn-lg">Start!</button>
+    </div>
+
+  </form>
 
   <script src="memoryGame.js"></script>
 
