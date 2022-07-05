@@ -98,7 +98,6 @@ function addListener() {
     if (eParent === GAMEBOARD && COUNT.flips < 2 && eTarget.className !== 'match' && COUNT.cardsFlipped[0] !== eTarget.id && eTarget.id !== "start" && eTargetId.id !== 'restart') {
       COUNT.score++;
       DISPLAYSCORE.innerText = COUNT.score;
-      console.log(COUNT)
       flipCard(eTarget);
     }
   });
