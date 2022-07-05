@@ -95,7 +95,7 @@ function addListener() {
     const eParent = eTarget.parentElement;
     const eTargetId = e.target.id;
 
-    if (eParent === GAMEBOARD && COUNT.flips < 2 && eTarget.className !== 'match' && COUNT.cardsFlipped[0] !== eTarget.id && eTarget.id !== "start") {
+    if (eParent === GAMEBOARD && COUNT.flips < 2 && eTarget.className !== 'match' && COUNT.cardsFlipped[0] !== eTarget.id && eTarget.id !== "start" && eTargetId.id !== 'restart') {
       COUNT.score++;
       DISPLAYSCORE.innerText = COUNT.score;
       flipCard(eTarget);
@@ -103,6 +103,7 @@ function addListener() {
   });
 }
 const LEVELFORM = document.querySelector('#newGame');
+const restartButton = document.querySelector('#restartButton');
 function addFormListener() {
   LEVELFORM.addEventListener('submit', e => {
     e.preventDefault();
@@ -110,6 +111,9 @@ function addFormListener() {
     SELECTEDLEVEL = DIFFICULTY[chosenLVL];
     GAMEBOARD.innerHTML = '';
     GAMEBOARD.style = 'grid-template-columns: repeat(4, auto);'
+    if(restartButton.innerHTML === ""){
+      restartButton.innerHTML = `<button type="submit" id="restart" class="btn btn-outline-danger btn-lg">New Game</button>`
+    };
     restart();
     console.log(SELECTEDLEVEL)
   })
@@ -183,6 +187,7 @@ function isWin() {
   if (COUNT.match === COUNT.maxMatch) {
     COUNT.finalScore = COUNT.score;
     setTimeout(() => {
+      restartButton.innerHTML = "";
       GAMEBOARD.style = 'height: 600px';
       GAMEBOARD.innerHTML = `<button type="submit" id="start" class="btn btn-outline-danger btn-lg">You Win!<br>Your Score: ${COUNT.score}<br>Select New Level and Play Again!</button>`;
       highScore();
