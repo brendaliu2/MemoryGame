@@ -24,19 +24,14 @@ body{
   transition: transform .2s;
 }
 
-
 #game {
   width: 600px;
-  height: 600px;
-  margin: auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  padding: 20px;
+  grid-gap: 1px;
   border-radius: 5px;
   background: linear-gradient(135deg,  #d8e2dc 0%,#ffe0e9 50%,#d8e2dc 100%);
 }
-
 
 h1 {
   padding: 20px;
@@ -47,7 +42,7 @@ h1 {
 
 #scoreBox {
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 70px;
   font-family: 'Permanent Marker', cursive;
 }
 
@@ -57,5 +52,22 @@ h3 {
 }
 
 #scoreRow {
-  background-color: #ffb8d1;
+  background-color: rgb(255, 184, 209);
+}
+
+#start {
+  font-size: 5em;
+  font-family: 'The Nautigal', cursive;
+}
+
+#levelSelection {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+#radioBox {
+  height: 30px;
+  background-color: #fcd5ce;
+  margin-left: 5px;
+  margin-right: 5px;
 }
