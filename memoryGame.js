@@ -6,15 +6,15 @@ const GAMEBOARD = document.querySelector('#game');
 const DISPLAYSCORE = document.querySelector('#score');
 const FOUND_MATCH_WAIT_MSECS = 1000;
 const DIFFICULTY = {
-  "level1": 4,
-  "level2": 8,
-  "level3": 12,
-  "level4": 16,
-  "level5": 20
+  "level1": 2,
+  "level2": 4,
+  "level3": 6,
+  "level4": 8,
+  "level5": 10
 }
 
 
-var SELECTEDLEVEL = 4;
+var SELECTEDLEVEL = 'level1';
 var COLORS = [];
 
 
@@ -34,7 +34,7 @@ function getRandomColor() {
 }
 
 function makeColors (){
-  let colorCount = SELECTEDLEVEL;
+  let colorCount = DIFFICULTY[SELECTEDLEVEL];
   while(colorCount > 0){
     let color = getRandomColor();
     COLORS.push(color,color);
@@ -47,7 +47,7 @@ const COUNT = {
   cardsFlipped: [],
   score: 0,
   match: 0,
-  maxMatch: SELECTEDLEVEL
+  maxMatch: DIFFICULTY[SELECTEDLEVEL]
 };
 
 const colors = shuffle(COLORS);
@@ -85,7 +85,7 @@ function createCards(colors) {
   }
   let cards = GAMEBOARD.childNodes;
   for (let i = 0; i < cards.length; i++) {
-    cards[i].id = `${i + 1}`;
+      cards[i].id = `${i + 1}`;
   }
 }
 
@@ -98,6 +98,7 @@ function addListener() {
     if (eParent === GAMEBOARD && COUNT.flips < 2 && eTarget.className !== 'match' && COUNT.cardsFlipped[0] !== eTarget.id && eTarget.id !== "start" && eTargetId.id !== 'restart') {
       COUNT.score++;
       DISPLAYSCORE.innerText = COUNT.score;
+      console.log(COUNT)
       flipCard(eTarget);
     }
   });
@@ -108,14 +109,14 @@ function addFormListener() {
   LEVELFORM.addEventListener('submit', e => {
     e.preventDefault();
     const chosenLVL = LEVELFORM.elements.options.value;
-    SELECTEDLEVEL = DIFFICULTY[chosenLVL];
+    SELECTEDLEVEL = chosenLVL;
     GAMEBOARD.innerHTML = '';
-    GAMEBOARD.style = 'grid-template-columns: repeat(4, auto);'
+    GAMEBOARD.style = `grid-template-columns: repeat(4, auto);`
     if(restartButton.innerHTML === ""){
       restartButton.innerHTML = `<button type="submit" id="restart" class="btn btn-outline-danger btn-lg">New Game</button>`
     };
+    COUNT.maxMatch = DIFFICULTY[SELECTEDLEVEL];
     restart();
-    console.log(SELECTEDLEVEL)
   })
 }
 

@@ -25,11 +25,11 @@ body{
 }
 
 #game {
-  margin-top: 30px;
   width: 600px;
+  margin-top: 30px;
   display: grid;
   padding: 20px;
-  grid-gap: 1px;
+  grid-gap: 10px;
   border-radius: 5px;
   background: linear-gradient(135deg,  #d8e2dc 0%,#ffe0e9 50%,#d8e2dc 100%);
 }
